@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<project>
+	<name> Library </name>
+	<variable id="1002">
+		<VarId> 1001 </VarId>
+		<VarName> Temperature </VarName>
+		<VarMax> 10 </VarMax>
+		<VarMin> 100 </VarMin>
+		<VarUnit> degree </VarUnit>
+		<VarInfo> floor_2_1001</VarInfo>
+		<TimeInterval> 1000 </TimeInterval>
+	</variable>
+	<variable id="1002">
+		<VarId> 1002 </VarId>
+		<VarName> Temperature </VarName>
+		<VarMax> 10 </VarMax>
+		<VarMin> 100 </VarMin>
+		<VarUnit> degree </VarUnit>
+		<VarInfo> floor_2_1002</VarInfo>
+		<TimeInterval> 1000 </TimeInterval>
+	</variable>
+	<variable id="1003">
+		<VarId> 1003 </VarId>
+		<VarName> Temperature </VarName>
+		<VarMax> 10 </VarMax>
+		<VarMin> 100 </VarMin>
+		<VarUnit> degree </VarUnit>
+		<VarInfo> floor_2_1003</VarInfo>
+		<TimeInterval> 1000 </TimeInterval>
+	</variable>
+	<variable id="1004">
+		<VarId> 1004 </VarId>
+		<VarName> Temperature </VarName>
+		<VarMax> 10 </VarMax>
+		<VarMin> 100 </VarMin>
+		<VarUnit> degree </VarUnit>
+		<VarInfo> floor_2_1004</VarInfo>
+		<TimeInterval> 1000 </TimeInterval>
+	</variable>
+	<variable id="1005">
+		<VarId> 1005 </VarId>
+		<VarName> Temperature </VarName>
+		<VarMax> 10 </VarMax>
+		<VarMin> 100 </VarMin>
+		<VarUnit> degree </VarUnit>
+		<VarInfo> floor_2_1005</VarInfo>
+		<TimeInterval> 1000 </TimeInterval>
+	</variable>
+	<variable id="1006">
+		<VarId> 1006 </VarId>
+		<VarName> Temperature </VarName>
+		<VarMax> 10 </VarMax>
+		<VarMin> 100 </VarMin>
+		<VarUnit> degree </VarUnit>
+		<VarInfo> floor_2_1006</VarInfo>
+		<TimeInterval> 1000 </TimeInterval>
+	</variable>
+</project>
