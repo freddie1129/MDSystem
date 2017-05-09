@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
 <project>
-	<name> Library </name>
+	
+	<projectname> Library </projectname>
+	<projecttime>2002-05-30T09:00:00</projecttime>
+	<projectAuthor> Freddie </projectAuthor>
+	<projectInfo> this is a test </projectInfo>
 	<variable id="1002">
 		<VarId> 1001 </VarId>
 		<VarName> Temperature </VarName>
