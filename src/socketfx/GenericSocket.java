@@ -34,13 +34,15 @@ package socketfx;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.net.*;
+import java.nio.ByteBuffer;
 import java.util.logging.Logger;
+import mdsystem.MDSystem;
 
 public abstract class GenericSocket implements SocketListener {
     
     private final static Logger LOGGER =
             Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
-
+    private MDSystem mainInterface;
     public int port;
     protected Socket socketConnection = null;
     private BufferedWriter output = null;
@@ -59,7 +61,20 @@ public abstract class GenericSocket implements SocketListener {
     public boolean debugFlagIsSet(int flag) {
         return ((flag & debugFlags) != 0);
     }
-
+    
+    public void SetGui(MDSystem gui)
+    {
+        mainInterface = gui;
+    }
+    
+    public MDSystem GetGui()
+    {
+        if (mainInterface != null)
+            return mainInterface;
+        else
+            return null;
+    }
+            
     /**
      * Turn on debugging option.
      * @param flags The debugging flags to enable
@@ -256,6 +271,17 @@ public abstract class GenericSocket implements SocketListener {
 
     class SocketReaderThread extends Thread {
 
+        
+        public double[] toDouble(byte[] bytes, int offset, int num) {
+            double[] da = new double[num / 8];
+            for (int i = 0; i < num / 8; i++) {
+                //byte[] te = new byte[8];
+               //System.arraycopy(bytes, offset + i * 8, te, 0, 8);
+                da[i] = ByteBuffer.wrap(bytes, offset + i * 8, 8).getDouble();
+            }
+            return da;
+        }
+        
         @Override
         public void run() {
             /*
@@ -275,30 +301,147 @@ public abstract class GenericSocket implements SocketListener {
             /*
              * Read from from input stream one line at a time
              */
-            try {
-                if (input != null) {
-                    String line;
-                    while ((line = input.readLine()) != null) {
-                        if (debugFlagIsSet(Constants.instance().DEBUG_RECV)) {
-                            String logMsg = "recv> " + line;
-                            LOGGER.info(logMsg);
+            char[] buf = new char[1024 * 1024];
+            while (true) {
+                try {
+                    if (input != null) {
+                        //String line;
+                        int nrLen;
+                        //.read(buf);
+                        nrLen = input.read(buf,0, 4);
+                        if (buf[0] == 'f' &&
+                            buf[1] == 'a' &&
+                            buf[2] == 'f' &&
+                            buf[3] == 'e')
+                        {
+                            char[] ca = new char[4]; 
+                            nrLen = input.read(ca,0, 4);
+                            short pointNum = (short) (ca[0]<< 8 | ca[1] & 0xFF);                             
+                            short sigNum = (short) (ca[2]<< 8 | ca[3] & 0xFF);
+                            int readlen = pointNum * sigNum * 8 + sigNum * 4;
+                            nrLen = input.read(buf,0, readlen);
+                            
+
+                        
+                        
+                        
+
+                        
+                        String[] tagArray = new String[sigNum];
+                        double[][] data = new double[sigNum][pointNum];
+                        
+
+                        
+                        
+                        
+                      //  System.out.printf("HEAD:%c%c%c%c Points:%d SignalNum: %d\n", (char)buf[0],(char)buf[1],(char)buf[2],(char)buf[3],
+                      //                          pointNum, sigNum);
+                        
+                        for (int i = 0; i < sigNum; i++)
+                        {
+                            tagArray[i] = String.format("%c%c%c%c", 
+                                                    (char)buf[i * 4 + 0],
+                                                    (char)buf[i * 4 + 1],
+                                                    (char)buf[i * 4 + 2],
+                                                    (char)buf[i * 4 + 3]);
                         }
-                        /*
-                         * The onMessage() method has to be implemented by
-                         * a sublclass.  If used in conjunction with JavaFX,
-                         * use Platform.runLater() to force this method to run
-                         * on the main thread.
-                         */
-                        onMessage(line);
+                        
+                        //int dataOffset = 8 + sigNum * 4;
+                        int headLen = 4 * sigNum;
+                        
+                        byte[] bt = new byte[nrLen - headLen];
+                        for (int i = 0; i < nrLen - headLen; i++) {
+                            bt[i] = (byte) buf[headLen + i];
+                        }
+                        
+                        double[] scr = toDouble(bt, 0, nrLen - headLen);                        
+                        for (int i = 0; i < sigNum; i++)
+                        {
+                            for (int k = 0; k < pointNum; k++ )
+                            {
+                                data[i][k] = scr[k * pointNum + i];
+                            }
+                        }
+                        
+                        for (int i = 0; i < sigNum; i++)
+                        {
+                           // mainInterface.UpdataTable(tagArray[i],String.valueOf(data[i][0]));
+                            mainInterface.UpdataTable(tagArray[i],ByteBuffer.wrap(bt,i*8,8).array());
+                        }
+                        
+                                                }
+                        else
+                        {
+                            continue;
+                        }
+                        //     System.out.printf("tag %d: %c%c%c%c\n", i,
+                        //             (char)buf[8 + i * 4 + 0],
+                        //             (char)buf[8 + i * 4 + 1],
+                        //             (char)buf[8 + i * 4 + 2],
+                        //             (char)buf[8 + i * 4 + 3]);
+                        //}
+                        
+                        //int dataOffset = 8 + 4 * sigNum;
+
+                        
+
+//                        System.out.println("****************************");
+//                        double[] data = toDouble(bt, nrLen - headLen);
+//                        for (int i = 0; i < pointNum * sigNum; i++) {
+//                            System.out.println(data[i]);
+//                        } 
+                        
+ //                       System.out.println("-----------------------------");
+
+
+
+//                        while ((line = input.readLine()) != null) {
+//                           // String logMsg = "recv> " + line;
+//                           // System.out.println(logMsg);
+//                            for (int i = 0; i < MonitorServer.clientList.size(); i++) {
+//                                client c = MonitorServer.clientList.get(i);
+//                                c.output.write(logMsg, 0, logMsg.length());
+//                                c.output.newLine();
+//                                c.output.flush();
+//                            }
+//                        }
                     }
+                } catch (IOException e) {
+                    System.out.println(e);
                 }
-            } catch (IOException e) {
-                if (debugFlagIsSet(Constants.instance().DEBUG_EXCEPTIONS)) {
-                    LOGGER.info(e.getMessage());
-                }
-            } finally {
-                close();
             }
+            
+            
+            
+//            try {
+//                if (input != null) {
+//                    String line;
+//                    while ((line = input.readLine()) != null) {
+//                        if (debugFlagIsSet(Constants.instance().DEBUG_RECV)) {
+//                            String logMsg = "recv> " + line;
+//                            LOGGER.info(logMsg);
+//                        }
+//                        
+//                        
+//                        
+//                        
+//                        /*
+//                         * The onMessage() method has to be implemented by
+//                         * a sublclass.  If used in conjunction with JavaFX,
+//                         * use Platform.runLater() to force this method to run
+//                         * on the main thread.
+//                         */
+//                        onMessage(line);
+//                    }
+//                }
+//            } catch (IOException e) {
+//                if (debugFlagIsSet(Constants.instance().DEBUG_EXCEPTIONS)) {
+//                    LOGGER.info(e.getMessage());
+//                }
+//            } finally {
+//                close();
+//            }
+            
         }
     }
     
