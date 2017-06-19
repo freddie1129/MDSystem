@@ -18,6 +18,7 @@ public class MonitorMax extends Monitor {
     {
         super(strID,strName,strUnit, strInfo);
         threholdMax = dMax;
+        type = Type.MAX;
     }
     public void setMax(double dMax)
     {
@@ -31,14 +32,16 @@ public class MonitorMax extends Monitor {
     @Override
     public boolean varify(double value)
     {        
-        return value <= threholdMax;
+        boolean ret = value <= threholdMax;
+        setStatus(ret);
+        return ret;
     }
     
     @Override
     public boolean varify(byte[] value)
     {      
- 
-        return varify(ByteBuffer.wrap(value).getDouble());
-
+        boolean ret = varify(ByteBuffer.wrap(value).getDouble());
+        setStatus(ret);
+        return ret;
     }
 }

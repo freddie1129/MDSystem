@@ -36,7 +36,7 @@
 		<TimeInterval> 1000 </TimeInterval>
 	</variable>
 	<variable id="1004">
-		<VarId>A005</VarId>
+		<VarId>A004</VarId>
 		<VarName> Temperature </VarName>
 		<VarMin>null</VarMin>
 		<VarMax>null</VarMax>
@@ -46,7 +46,7 @@
 		<TimeInterval> 1000 </TimeInterval>
 	</variable>
 	<variable id="1004">
-		<VarId>A006</VarId>
+		<VarId>A005</VarId>
 		<VarName> Temperature </VarName>
 		<VarMin>null</VarMin>
 		<VarMax>null</VarMax>

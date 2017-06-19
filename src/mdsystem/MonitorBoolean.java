@@ -15,6 +15,7 @@ public class MonitorBoolean extends Monitor {
     public MonitorBoolean(String strID,String strName, String strUnit, String strInfo)
     {
         super(strID,strName,strUnit, strInfo);
+        type = Type.YESNO;
     }
     
     @Override
@@ -24,9 +25,11 @@ public class MonitorBoolean extends Monitor {
         {
             if (value[i] != 0)
             {
+                setStatus(true);
                 return true;
             }
         }
+        setStatus(false);
         return false;
     }
     

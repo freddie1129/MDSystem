@@ -19,6 +19,7 @@ public class MonitorEnum extends Monitor{
         super(strID,strName,strUnit, strInfo);
         valueEnum = new int[array.length]; 
         System.arraycopy(array, 0, valueEnum, 0, array.length);
+        type = Type.ENUM;
     }   
     public void setEnum(int[] array)
     {
@@ -37,8 +38,10 @@ public class MonitorEnum extends Monitor{
         for (int i = 0; i < valueEnum.length; i++)
         {
             if (value == valueEnum[i])
+                setStatus(true);
                 return true;
         }
+        setStatus(false);
         return false;
     }
     
@@ -46,7 +49,9 @@ public class MonitorEnum extends Monitor{
     public boolean varify(byte[] value)
     {   
         int d = (value[0] << 8) | (value[1] & 0xff);
-        return varify(d);
+        boolean b = varify(d);
+        setStatus(b);
+        return b;
     }
     
     @Override

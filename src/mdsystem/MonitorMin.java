@@ -16,6 +16,7 @@ public class MonitorMin extends Monitor{
     {
         super(strID,strName,strUnit, strInfo);
         threholdMin = dMin;
+        type = Type.MIN;
     }
     public void setMax(double dMin)
     {
@@ -28,14 +29,17 @@ public class MonitorMin extends Monitor{
     @Override
     public boolean varify(double value)
     {        
-        return value >= threholdMin;
+        boolean ret = value >= threholdMin;
+        setStatus(ret);
+        return ret;
     }
         @Override
     public boolean varify(byte[] value)
     {      
  
-        return varify(ByteBuffer.wrap(value).getDouble());
-
+        boolean ret = varify(ByteBuffer.wrap(value).getDouble());
+        setStatus(ret);
+        return ret;
     }
     
 }

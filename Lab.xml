@@ -8,8 +8,8 @@
 	<variable id="1002">
 		<VarId>A001</VarId>
 		<VarName>Temperature</VarName>
-		<VarMin>100</VarMin>
-		<VarMax>10</VarMax>
+		<VarMin>-0.9</VarMin>
+		<VarMax>0.9</VarMax>
 		<VarEnum>null</VarEnum>
 		<VarUnit>degree</VarUnit>
 		<VarInfo>floor_2_1001</VarInfo>
@@ -19,7 +19,7 @@
 		<VarId>A002</VarId>
 		<VarName> Temperature </VarName>
 		<VarMin>null</VarMin>
-		<VarMax>10</VarMax>
+		<VarMax>0.8</VarMax>
 		<VarEnum>null</VarEnum>
 		<VarUnit> degree </VarUnit>
 		<VarInfo> floor_2_1002</VarInfo>
@@ -28,7 +28,7 @@
 	<variable id="1003">
 		<VarId>A003</VarId>
 		<VarName> Temperature </VarName>
-		<VarMin>100</VarMin>
+		<VarMin>-0.6</VarMin>
 		<VarMax>null</VarMax>
 		<VarEnum>null</VarEnum>
 		<VarUnit> degree </VarUnit>

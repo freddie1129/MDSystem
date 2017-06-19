@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Tue Jun 20 02:16:37 AEST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.2 - (1629631): instance a816c00e-015c-c124-3dce-0000029aa670 
+on database directory /home/freddie/NetBeansProjects/MDSystem/MDSystem/monitorDB with class loader sun.misc.Launcher$AppClassLoader@42a57993 
+Loaded from file:/home/freddie/NetBeansProjects/MDSystem/MDSystem/dist/run1974575893/lib/derby.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_121-b13
+user.dir=/home/freddie/NetBeansProjects/MDSystem/MDSystem
+os.name=Linux
+os.arch=amd64
+os.version=4.2.0-35-generic
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

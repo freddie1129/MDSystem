@@ -93,6 +93,8 @@ import mdsystem.MonitorEnum;
 import mdsystem.MonitorMax;
 import mdsystem.MonitorMaxMin;
 import mdsystem.MonitorMin;
+import mdsystem.DBAdmin;
+import mdsystem.MonitorVariable;
 
 
         
@@ -139,6 +141,7 @@ public class MDSystem extends Application {
         DISCONNECTED, WAITING, CONNECTED, AUTOCONNECTED, AUTOWAITING
     }
     private FxSocketClient socket;
+    private DBAdmin database;
     // private FxSocketServer socket;
     private boolean isConnected;
 
@@ -254,7 +257,7 @@ public class MDSystem extends Application {
         menuBar.getMenus().addAll(menuFile, menuEdit, menuView);
         return menuBar;
     }
-    final TableView table = new TableView();
+    final TableView<MonitorVariable> table = new TableView();
     public HBox addDataHBox() {
         HBox hbox = new HBox();
         hbox.setPadding(new Insets(5, 5, 5, 5));
@@ -349,6 +352,66 @@ public class MDSystem extends Application {
         //ColInfo.setMinWidth(100);
         ColInfo.setCellValueFactory(new PropertyValueFactory<>("ColInfo"));
 
+        
+        ColValue.setCellFactory(column -> {
+    return new TableCell<MonitorVariable, String>() {
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty); //This is mandatory
+
+            if (item == null || empty) { //If the cell is empty
+                setText(null);
+                setStyle("");
+            } else { //If the cell is not empty
+
+                setText(item); //Put the String data in the cell
+
+                //We get here all the info of the Person of this row
+                MonitorVariable auxParam = getTableView().getItems().get(getIndex());
+
+                // Style all persons wich name is "Edgard"
+                String strTag = auxParam.getColID();
+                for (int i = 0; i < listMonitor.size(); i++)
+                {
+                    Monitor temMon = listMonitor.get(i);
+                    if (strTag.equals(temMon.getID()))
+                    {
+                        if (!temMon.getStatus())
+                        {
+                            setTextFill(Color.RED); //The text in red
+                            //setStyle("-fx-background-color: yellow"); //The background of the cell in yellow
+                            //System.out.println("Set background");
+                        }
+                        else
+                        {
+                            setTextFill(Color.BLACK); //The text in red
+                          //  setStyle("-fx-background-color: white"); //The background of the cell in yellow
+                            //System.out.println("Set background");
+                        }
+                    }
+                }
+                
+            //    if (auxPerson.getFirstName().equals("Emma") && auxPerson.getLastName().equals("Jones")) {
+            //        setTextFill(Color.RED); //The text in red
+            //        setStyle("-fx-background-color: yellow"); //The background of the cell in yellow
+            //        System.out.println("Set background");
+            //    } else {
+            //        //Here I see if the row of this cell is selected or not
+            //        if(getTableView().getSelectionModel().getSelectedItems().contains(auxPerson))
+            //            setTextFill(Color.WHITE);
+            //        else
+            //            setTextFill(Color.BLACK);
+            //    }
+            }
+        }
+    };
+});
+        
+        
+        
+        
+        
+        
         table.setItems(data);
         table.getColumns().addAll(ColNum, ColID, ColName, ColValue, ColMin,ColMax,ColOption, ColUnit, ColInfo);
 
@@ -495,7 +558,10 @@ public class MDSystem extends Application {
     public void start(Stage primaryStage) {
 
         primaryStage.setTitle("Environment Monitoring & Displaying System");
+        database = new DBAdmin();
+        
         initTableView();
+        database.addTable(data);
         VBox rootHbox = new VBox();
         rootHbox.setSpacing(5);
         rootHbox.setPadding(new Insets(0, 0, 2, 0));
@@ -504,10 +570,19 @@ public class MDSystem extends Application {
         HBox dataHBox = addDataHBox();
         HBox infoHBox = addInfoHBox();
         HBox statusHBox = addHBoxStatus();
+         
+       HBox testHBox = new HBox();
+         
         Button btnConnect = new Button("  Connect Sever  ");
         Button btnDisConnect = new Button("  DisConnect Sever  ");
+        Button btnClearError = new Button("  Clear Error  ");
+        Button btnSelectDB = new Button("selectdb");
+        Button btnCloseDB = new Button("closedb");
+               Button btnTest = new Button("test");
 
-        rootHbox.getChildren().addAll(menuBar, btnConnect, btnDisConnect, toolBar, dataHBox, infoHBox, statusHBox);
+        testHBox.getChildren().addAll(btnConnect,btnDisConnect,btnClearError,btnSelectDB,btnCloseDB,btnTest);
+        
+        rootHbox.getChildren().addAll(testHBox, dataHBox, infoHBox, statusHBox);
         MDSystem sysTem = this;
         btnConnect.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -521,11 +596,50 @@ public class MDSystem extends Application {
                 
             }
         });
+        
+                btnSelectDB.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                MonitorVariable var = table.getSelectionModel().getSelectedItem();
+                database.select(var.getColID());
+                //System.out.println(var.getColID());
+            }
+        });
+                
+                                btnCloseDB.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                   
+                database.closeDB();
+            }
+        });
+                                
+        btnTest.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                   
+                double d = 89.999;
+                database.addData("A001", d);
+            }
+        });
+
 
         btnDisConnect.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
                 socket.shutdown();
+            }
+        });
+        
+        btnClearError.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                for (int i = 0; i < listMonitor.size();i++)
+                {
+                    listMonitor.get(i).clearError();
+                    
+                }
+                
             }
         });
 
@@ -561,9 +675,25 @@ public class MDSystem extends Application {
             System.out.println(t);
             if (data.get(i).getColID().equals(tag))
             {
+                
                 String log = listMonitor.get(i).getDisplayStr(b);
+                listMonitor.get(i).varify(b);
                 System.out.printf("%s:%s",tag,log);
                 data.get(i).setColValue(log);
+                if (listMonitor.get(i).type == Monitor.Type.ENUM)
+                {
+                    int a = Integer.parseInt(log);
+                    database.addData(tag, a);
+                }
+                else if (listMonitor.get(i).type == Monitor.Type.YESNO)
+                {
+                    int a = log.equals("Normal") ? 1 : 0;
+                    database.addData(tag, a);
+                }
+                else 
+                {
+                    database.addData(tag, Double.parseDouble(log));
+                }
                 table.refresh();
                 return;
             }
@@ -744,110 +874,7 @@ public class MDSystem extends Application {
     }
 
     //Monitoring Variable
-    public static class MonitorVariable {
 
-        public static int num = 1;
-        private final SimpleStringProperty ColID;
-        private final SimpleIntegerProperty ColNum;
-        private final SimpleStringProperty ColName;
-        private final SimpleStringProperty ColValue;
-        private final SimpleStringProperty ColMax;
-        private final SimpleStringProperty ColMin;
-        private final SimpleStringProperty ColEnum;        
-        private final SimpleStringProperty ColUnit;
-        private final SimpleStringProperty ColInfo;
-        private MonitorVariable(
-                String ColID,
-                String ColName,
-                String ColValue,
-                String ColMin,
-                String ColMax,
-                String ColEnum,
-                String ColUnit,
-                String ColInfo) {
-            this.ColNum = new SimpleIntegerProperty(num++);
-            this.ColID = new SimpleStringProperty(ColID);
-            this.ColName = new SimpleStringProperty(ColName);
-            this.ColValue = new SimpleStringProperty(ColValue);
-            this.ColMax = new SimpleStringProperty(ColMax);
-            this.ColMin = new SimpleStringProperty(ColMin);
-            this.ColEnum = new SimpleStringProperty(ColEnum);
-            this.ColUnit = new SimpleStringProperty(ColUnit);
-            this.ColInfo = new SimpleStringProperty(ColInfo);
-
-        }
-
-        public int getColNum() {
-            return ColNum.get();
-        }
-
-        public String getColID() {
-            return ColID.get();
-        }
-
-        public String getColName() {
-            return ColName.get();
-        }
-
-        public String getColValue() {
-            return ColValue.get();
-        }
-
-        public String getColMax() {
-            return ColMax.get();
-        }
-
-        public String getColMin() {
-            return ColMin.get();
-        }
-        
-        public String getColEnum() {
-            return ColEnum.get();
-        }
-
-        public String getColUnit() {
-            return ColUnit.get();
-        }
-
-        public String getColInfo() {
-            return ColInfo.get();
-        }
-
-
-        //set value
-
-        public void setColID(String fID) {
-            ColID.set(fID);
-        }
-
-        public void setColName(String fName) {
-            ColName.set(fName);
-        }
-
-        public void setColValue(String fValue) {
-            ColValue.set(fValue);
-        }
-
-        public void setColMax(String fMax) {
-            ColMax.set(fMax);
-        }
-
-        public void setColMin(String fMin) {
-            ColMin.set(fMin);
-        }
-        
-        public void setColEnum(String strEnum) {
-            ColEnum.set(strEnum);
-        }
-
-        public void setColUnit(String fUnit) {
-            ColUnit.set(fUnit);
-        }
-
-        public void setColInfo(String fInfo) {
-            ColInfo.set(fInfo);
-        }
-    }
 }
 
 
