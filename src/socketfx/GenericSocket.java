@@ -1,34 +1,3 @@
-/*
- * Copyright (c) 2015, Jim Connors
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- *   * Neither the name of this project nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 package socketfx;
 
 import java.io.*;
@@ -42,7 +11,7 @@ public abstract class GenericSocket implements SocketListener {
     
     private final static Logger LOGGER =
             Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
-    private MDSystem mainInterface;
+    public MDSystem mainInterface;
     public int port;
     protected Socket socketConnection = null;
     private BufferedWriter output = null;
@@ -105,6 +74,40 @@ public abstract class GenericSocket implements SocketListener {
      * status of the socket changes, either opened or closed (for whatever
      * reason).
      */
+
+    
+    public boolean connect1() {
+             try {
+                initSocketConnection();
+                if (socketConnection != null && !socketConnection.isClosed()) {
+                    /*
+                     * Get input and output streams
+                     */
+                    input = new BufferedReader(new InputStreamReader(
+                            socketConnection.getInputStream()));
+                    output = new BufferedWriter(new OutputStreamWriter(
+                            socketConnection.getOutputStream()));
+                    output.flush();
+                }
+                /*
+                 * Notify SocketReaderThread that it can now start.
+                 */
+                //freddie notifyReady();
+            } catch (IOException e) {
+                if (debugFlagIsSet(Constants.instance().DEBUG_EXCEPTIONS)) {
+                    LOGGER.info(e.getMessage());
+                    
+                }
+                /*
+                 * This will notify the SocketReaderThread that it should exit.
+                 */
+                //freddie notifyReady();
+                return false;
+            }
+             return true;            
+    }
+    
+ 
     public void connect() {
         try {
             /*
@@ -124,6 +127,18 @@ public abstract class GenericSocket implements SocketListener {
             }
         }  
     }
+    
+        public void startReading() {
+        try {
+            socketReaderThread = new SocketReaderThread();
+            socketReaderThread.start();
+        } catch (Exception e) {
+            if (debugFlagIsSet(Constants.instance().DEBUG_EXCEPTIONS)) {
+                LOGGER.info(e.getMessage());
+            }
+        }  
+    }
+        
 
     /**
      * Shutdown and close GenericSocket instance in an orderly fashion.
@@ -159,6 +174,7 @@ public abstract class GenericSocket implements SocketListener {
             closeAdditionalSockets();
             if (debugFlagIsSet(Constants.instance().DEBUG_STATUS)) {
                 LOGGER.info("Connection closed");
+                mainInterface.log("Connection closed");
             }
             /*
              * The onClosedStatus() method has to be implemented by
@@ -256,7 +272,7 @@ public abstract class GenericSocket implements SocketListener {
                 /*
                  * Notify SocketReaderThread that it can now start.
                  */
-                notifyReady();
+                //freddie notifyReady();
             } catch (IOException e) {
                 if (debugFlagIsSet(Constants.instance().DEBUG_EXCEPTIONS)) {
                     LOGGER.info(e.getMessage());
@@ -264,7 +280,7 @@ public abstract class GenericSocket implements SocketListener {
                 /*
                  * This will notify the SocketReaderThread that it should exit.
                  */
-                notifyReady();
+                //freddie notifyReady();
             }
         }
     }
@@ -272,22 +288,22 @@ public abstract class GenericSocket implements SocketListener {
     class SocketReaderThread extends Thread {
 
         
-        public double[] toDouble(byte[] bytes, int offset, int num) {
-            double[] da = new double[num / 8];
-            for (int i = 0; i < num / 8; i++) {
-                //byte[] te = new byte[8];
-               //System.arraycopy(bytes, offset + i * 8, te, 0, 8);
-                da[i] = ByteBuffer.wrap(bytes, offset + i * 8, 8).getDouble();
-            }
-            return da;
-        }
+//        public double[] toDouble(byte[] bytes, int offset, int num) {
+//            double[] da = new double[num / 8];
+//            for (int i = 0; i < num / 8; i++) {
+//                //byte[] te = new byte[8];
+//               //System.arraycopy(bytes, offset + i * 8, te, 0, 8);
+//                da[i] = ByteBuffer.wrap(bytes, offset + i * 8, 8).getDouble();
+//            }
+//            return da;
+//        }
         
         @Override
         public void run() {
             /*
              * Wait until the socket is set up before beginning to read.
              */
-            waitForReady();
+            // freddie waitForReady();
             /* 
              * Now that the readerThread has started, it's safe to inform
              * the world that the socket is open, if in fact, it is open.
@@ -354,19 +370,25 @@ public abstract class GenericSocket implements SocketListener {
                             bt[i] = (byte) buf[headLen + i];
                         }
                         
-                        double[] scr = toDouble(bt, 0, nrLen - headLen);                        
-                        for (int i = 0; i < sigNum; i++)
-                        {
-                            for (int k = 0; k < pointNum; k++ )
-                            {
-                                data[i][k] = scr[k * pointNum + i];
-                            }
-                        }
+                      //  double[] scr = toDouble(bt, 0, nrLen - headLen);                        
+//                        for (int i = 0; i < sigNum; i++)
+//                        {
+//                            for (int k = 0; k < pointNum; k++ )
+//                            {
+//                                data[i][k] = scr[k * pointNum + i];
+//                            }
+//                        }
                         
                         for (int i = 0; i < sigNum; i++)
                         {
                            // mainInterface.UpdataTable(tagArray[i],String.valueOf(data[i][0]));
-                            mainInterface.UpdataTable(tagArray[i],ByteBuffer.wrap(bt,i*8,8).array());
+                                                        byte []tempw = new byte[8]; 
+                            System.arraycopy(bt,i*8,tempw,0,8); //, nrLen, bt, headLen, nrLen);
+                            mainInterface.UpdataTable(tagArray[i],tempw);
+
+
+                            System.out.println(ByteBuffer.wrap(bt,i*8,8).array());
+                            
                         }
                         
                                                 }

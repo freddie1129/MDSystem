@@ -38,8 +38,10 @@ public class MonitorEnum extends Monitor{
         for (int i = 0; i < valueEnum.length; i++)
         {
             if (value == valueEnum[i])
+            {
                 setStatus(true);
                 return true;
+            }
         }
         setStatus(false);
         return false;
@@ -48,7 +50,7 @@ public class MonitorEnum extends Monitor{
     @Override
     public boolean varify(byte[] value)
     {   
-        int d = (value[0] << 8) | (value[1] & 0xff);
+        int d = ByteBuffer.wrap(value,0,4).getInt(); //(value[0] << 8) | (value[1] & 0xff);
         boolean b = varify(d);
         setStatus(b);
         return b;
