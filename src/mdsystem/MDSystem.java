@@ -603,6 +603,10 @@ public class MDSystem extends Application {
         primaryStage.setTitle("Environment Monitoring & Displaying System");
         //database Admin
         database = new DBAdmin(this);
+        DialogTest dt = new DialogTest(primaryStage);
+        dt.showAndWait();
+        
+                
         String projectFile = "project.xml";
         if (!initTableView(projectFile)) {
             log("Fail to load project.xml.");
@@ -1380,100 +1384,100 @@ public class MDSystem extends Application {
 //        hbox.getChildren().addAll(buttonCurrent, buttonProjected);
 //        return hbox;
 //    }
-class DialogLogin extends Stage {
-
-    public DialogLogin(Stage owner) {
-        super();
-        initOwner(owner);
-        setTitle("Login");
-        Group root = new Group();
-        Scene scene = new Scene(root, 320, 220, Color.WHITE);
-        setScene(scene);
-
-        GridPane gridpane = new GridPane();
-
-        gridpane.setAlignment(Pos.CENTER);
-        gridpane.setHgap(10);
-        gridpane.setVgap(10);
-        gridpane.setPadding(new Insets(25, 25, 25, 25));
-
-        Text scenetitle = new Text("Welcome");
-        scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-        gridpane.add(scenetitle, 0, 0, 2, 1);
-
-        Label userNameLbl = new Label("Username: ");
-        gridpane.add(userNameLbl, 0, 1);
-        final TextField userNameFld = new TextField("admin");
-        gridpane.add(userNameFld, 1, 1);
-
-        Label passwordLbl = new Label("Password: ");
-        gridpane.add(passwordLbl, 0, 2);
-        final PasswordField passwordFld = new PasswordField();
-        passwordFld.setText("admin");
-        gridpane.add(passwordFld, 1, 2);
-
-        Button login = new Button("Login");
-        Button cancellogin = new Button("Cancel");
-        Label hint = new Label("hints for test: username:admin,password:admin");
-        login.setOnAction(new EventHandler<ActionEvent>() {
-
-            public void handle(ActionEvent event) {
-                int ret = dbase.loginCheck(userNameFld.getText(), passwordFld.getText());
-                switch (ret) {
-                    case 1: {
-                        bglbLogin = true;
-                        glbCurUser = userNameFld.getText();
-                        close();
-                        break;
-                    }
-                    case -1: {
-                        bglbLogin = false;
-                        Alert alert = new Alert(AlertType.ERROR);
-                        alert.setTitle("Login Error");
-                        String strLog = String.format("Username %s is not exist.", userNameFld.getText());
-                        alert.setHeaderText("Logining Error");
-                        alert.setContentText(strLog);
-                        alert.showAndWait();
-                        break;
-                    }
-                    case 0: {
-                        bglbLogin = false;
-                        Alert alert = new Alert(AlertType.ERROR);
-                        alert.setTitle("Login Error");
-                        String strLog = String.format("Password is not matched by Username: %s", userNameFld.getText());
-                        alert.setHeaderText("Logining Error");
-                        alert.setContentText(strLog);
-                        alert.showAndWait();
-                        break;
-                    }
-                    default:
-                        break;
-                }
-            }
-        });
-
-        cancellogin.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent event) {
-                bglbLogin = false;
-                close();
-            }
-        });
-
-        HBox logBox = new HBox();
-        logBox.setSpacing(5);
-        logBox.setAlignment(Pos.BOTTOM_RIGHT);
-        logBox.getChildren().addAll(login, cancellogin);
-
-        gridpane.add(logBox, 1, 4);
-        gridpane.add(hint, 0, 5,2,2);
-        
-        GridPane.setHalignment(login, HPos.RIGHT);
-        root.getChildren().add(gridpane);
-    }
-
-    private DBAdmin dbase;
-
-    public void setDB(DBAdmin db) {
-        dbase = db;
-    }
-}
+//class DialogLogin extends Stage {
+//
+//    public DialogLogin(Stage owner) {
+//        super();
+//        initOwner(owner);
+//        setTitle("Login");
+//        Group root = new Group();
+//        Scene scene = new Scene(root, 320, 220, Color.WHITE);
+//        setScene(scene);
+//
+//        GridPane gridpane = new GridPane();
+//
+//        gridpane.setAlignment(Pos.CENTER);
+//        gridpane.setHgap(10);
+//        gridpane.setVgap(10);
+//        gridpane.setPadding(new Insets(25, 25, 25, 25));
+//
+//        Text scenetitle = new Text("Welcome");
+//        scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+//        gridpane.add(scenetitle, 0, 0, 2, 1);
+//
+//        Label userNameLbl = new Label("Username: ");
+//        gridpane.add(userNameLbl, 0, 1);
+//        final TextField userNameFld = new TextField("admin");
+//        gridpane.add(userNameFld, 1, 1);
+//
+//        Label passwordLbl = new Label("Password: ");
+//        gridpane.add(passwordLbl, 0, 2);
+//        final PasswordField passwordFld = new PasswordField();
+//        passwordFld.setText("admin");
+//        gridpane.add(passwordFld, 1, 2);
+//
+//        Button login = new Button("Login");
+//        Button cancellogin = new Button("Cancel");
+//        Label hint = new Label("hints for test: username:admin,password:admin");
+//        login.setOnAction(new EventHandler<ActionEvent>() {
+//
+//            public void handle(ActionEvent event) {
+//                int ret = dbase.loginCheck(userNameFld.getText(), passwordFld.getText());
+//                switch (ret) {
+//                    case 1: {
+//                        bglbLogin = true;
+//                        glbCurUser = userNameFld.getText();
+//                        close();
+//                        break;
+//                    }
+//                    case -1: {
+//                        bglbLogin = false;
+//                        Alert alert = new Alert(AlertType.ERROR);
+//                        alert.setTitle("Login Error");
+//                        String strLog = String.format("Username %s is not exist.", userNameFld.getText());
+//                        alert.setHeaderText("Logining Error");
+//                        alert.setContentText(strLog);
+//                        alert.showAndWait();
+//                        break;
+//                    }
+//                    case 0: {
+//                        bglbLogin = false;
+//                        Alert alert = new Alert(AlertType.ERROR);
+//                        alert.setTitle("Login Error");
+//                        String strLog = String.format("Password is not matched by Username: %s", userNameFld.getText());
+//                        alert.setHeaderText("Logining Error");
+//                        alert.setContentText(strLog);
+//                        alert.showAndWait();
+//                        break;
+//                    }
+//                    default:
+//                        break;
+//                }
+//            }
+//        });
+//
+//        cancellogin.setOnAction(new EventHandler<ActionEvent>() {
+//            public void handle(ActionEvent event) {
+//                bglbLogin = false;
+//                close();
+//            }
+//        });
+//
+//        HBox logBox = new HBox();
+//        logBox.setSpacing(5);
+//        logBox.setAlignment(Pos.BOTTOM_RIGHT);
+//        logBox.getChildren().addAll(login, cancellogin);
+//
+//        gridpane.add(logBox, 1, 4);
+//        gridpane.add(hint, 0, 5,2,2);
+//        
+//        GridPane.setHalignment(login, HPos.RIGHT);
+//        root.getChildren().add(gridpane);
+//    }
+//
+//    private DBAdmin dbase;
+//
+//    public void setDB(DBAdmin db) {
+//        dbase = db;
+//    }
+//}

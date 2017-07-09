@@ -1,3 +1,4 @@
+monitorDB/*
 build/*
 dist/*
-*.log
+*.log.*
