@@ -111,6 +111,10 @@ import java.util.logging.Logger;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import javafx.beans.value.ChangeListener;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.layout.Pane;
+import javafx.stage.StageStyle;
 
 ////////////////////////
 //import java.util.AbstractMap.SimpleEntry;
@@ -212,6 +216,39 @@ public class MDSystem extends Application {
 //                }
 //            }
 //        }
+    }
+    
+    public boolean showDialogLogin()
+    {
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("DialogLogin.fxml"));
+            Stage stage = new Stage(StageStyle.DECORATED);
+            stage.setScene(new Scene((Pane) loader.load()));
+            DialogLoginController controller
+                    = loader.<DialogLoginController>getController();
+            controller.initDatabase(database);
+            stage.showAndWait();
+            String strUsername = controller.getUsername();
+            if (strUsername.equals(""))
+            {
+                String strlog = "Login failed.";
+                log(strlog);
+                return false;
+            }
+            else
+            {
+                String strlog = String.format("%s login successfully.", strUsername);
+                log(strlog);
+                return true;
+            }          
+        }
+        catch (Exception e)
+        {
+            System.out.println(e);
+            return false;
+        }
+            
+
     }
 
     //TableView Variable    
@@ -589,8 +626,62 @@ public class MDSystem extends Application {
         loglist.add(strLog);
     }
 
-    @Override
-    public void start(Stage primaryStage) {
+        @Override
+    public void start(Stage stage) throws Exception {
+        
+//        //Create Log system
+//        loglist = FXCollections.observableArrayList();
+//        try {
+//            Handler handler = new FileHandler("test.log", 10000, 2);
+//            LOGGER.getLogger("").addHandler(handler);
+//        } catch (Exception e) {
+//            System.out.println(e);
+//        }
+//        
+//        //Create DB
+//        database = new DBAdmin(this);
+//        
+//        //Loading project layout file
+//        String projectFile = "project.xml";
+//        if (!initTableView(projectFile)) {
+//            log("Fail to load project.xml.");
+//            Alert alert = new Alert(AlertType.ERROR);
+//            alert.setTitle("Loading Error");
+//            String strLog = String.format("Fail to load Project Layout File: %s", "project.xml");
+//            alert.setHeaderText("Loading Error");
+//            alert.setContentText(strLog);
+//            alert.showAndWait();
+//            return;
+//        }
+//        log("Load project.xml");
+//        //build database if this is the first time to launch system, according to the project layout file
+//        //or ignore it
+//        database.addTable(data);
+//        //launch Loging dialog
+//        if (!showDialogLogin())
+//        {
+//            return;
+//        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        Parent root = FXMLLoader.load(getClass().getResource("MainWindow.fxml"));        
+        Scene scene = new Scene(root); 
+        stage.setScene(scene);
+        stage.setTitle(" Monitoring & Displaying System");
+        stage.show();
+    }
+    
+    
+  //  @Override
+    public void start1(Stage primaryStage) {
 
         loglist = FXCollections.observableArrayList();
         try {
@@ -602,9 +693,9 @@ public class MDSystem extends Application {
 
         primaryStage.setTitle("Environment Monitoring & Displaying System");
         //database Admin
-        database = new DBAdmin(this);
-        DialogTest dt = new DialogTest(primaryStage);
-        dt.showAndWait();
+   //     database = new DBAdmin(this);
+       // DialogTest dt = new DialogTest(primaryStage);
+       // dt.showAndWait();
         
                 
         String projectFile = "project.xml";
@@ -620,15 +711,22 @@ public class MDSystem extends Application {
         }
         log("Load project.xml");
         database.addTable(data);
-        DialogLogin myDialog = new DialogLogin(primaryStage);
-        myDialog.setDB(database);
-        myDialog.sizeToScene();
-        myDialog.showAndWait();
-        if (!bglbLogin) {
-            // This is a unsucessful login, just exit;
-            database.closeDB();
+        
+        
+        if (!showDialogLogin())
+        {
             return;
         }
+        
+//        DialogLogin myDialog = new DialogLogin(primaryStage);
+//        myDialog.setDB(database);
+//        myDialog.sizeToScene();
+//        myDialog.showAndWait();
+//        if (!bglbLogin) {
+//            // This is a unsucessful login, just exit;
+//            database.closeDB();
+//            return;
+//        }
 
         VBox rootHbox = new VBox();
         rootHbox.setSpacing(5);
@@ -963,7 +1061,8 @@ public class MDSystem extends Application {
         connect();
         primaryStage.show();
     }
-
+    
+    
     public void UpdataTable(String tag, String value) {
         for (int i = 0; i < data.size(); i++) {
             String t = data.get(i).getColID();
@@ -1150,6 +1249,61 @@ public class MDSystem extends Application {
             return false;
         }
         return true;
+    }
+    
+    
+    public  ObservableList<MonitorVariable> getProjectLayout(String projectFile) {
+        
+        ObservableList<MonitorVariable> data = FXCollections.observableArrayList();
+        try {
+            File fXmlFile = new File(projectFile);
+            if (!fXmlFile.exists()) {
+                return data;
+            }
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(fXmlFile);
+            doc.getDocumentElement().normalize();
+
+            projectName = doc.getElementsByTagName("projectname").item(0).getTextContent();
+            projectDate = doc.getElementsByTagName("projecttime").item(0).getTextContent();
+            projectInfo = doc.getElementsByTagName("projectInfo").item(0).getTextContent();
+            NodeList nList = doc.getElementsByTagName("variable");
+            String strID, strName, strMin, strMax, strEnum, strUnit, strInfo;
+
+            for (int temp = 0; temp < nList.getLength(); temp++) {
+                org.w3c.dom.Node nNode = nList.item(temp);
+                if (nNode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                    Element eElement = (Element) nNode;                    
+                    strID = eElement.getElementsByTagName("VarId").item(0).getTextContent();
+                    strName = eElement.getElementsByTagName("VarName").item(0).getTextContent();
+                    strMax = eElement.getElementsByTagName("VarMax").item(0).getTextContent();
+                    strMin = eElement.getElementsByTagName("VarMin").item(0).getTextContent();
+                    strUnit = eElement.getElementsByTagName("VarUnit").item(0).getTextContent();
+                    strEnum = eElement.getElementsByTagName("VarEnum").item(0).getTextContent();
+                    strInfo = eElement.getElementsByTagName("VarInfo").item(0).getTextContent();
+                    Monitor tempMon = GenMonitor(strID, strName, strUnit, strInfo, strMin, strMax, strEnum);
+                    if (tempMon != null) {
+                        listMonitor.add(tempMon);
+                    }
+
+                    data.add(new MonitorVariable(
+                            strID,
+                            strName,
+                            "",
+                            strMin,
+                            strMax,
+                            strEnum,
+                            strUnit,
+                            strInfo));
+                    listVariableName.add(eElement.getElementsByTagName("VarId").item(0).getTextContent() + eElement.getElementsByTagName("VarName").item(0).getTextContent());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return data;
+        }
+        return data;
     }
 
     //Monitoring Variable

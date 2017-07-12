@@ -67,11 +67,16 @@ public class DBAdmin
     /* the default framework is embedded */
     private String framework = "embedded";
     private String protocol = "jdbc:derby:";
-    public DBAdmin(MDSystem md)
+    public DBAdmin(MainWindowController md)
     {
         gui = md;
     }
-    MDSystem gui;
+        public DBAdmin()
+    {
+        gui = null;
+    }
+        
+    MainWindowController gui;
 
     /**
      * <p>

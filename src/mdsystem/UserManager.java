@@ -139,8 +139,9 @@ class UserManager extends Stage {
             buttonAdd.setDisable(true);
             buttonDelete.setDisable(true);
         }
+    //    ((MainWindowController)this.getOwner().getScene().getWindow()).log("frie");//  .getOwner()  .log("add");
         
-        
+
         
         
         
@@ -163,64 +164,65 @@ class UserManager extends Stage {
         buttonAdd.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-////                UserManager um = new UserManager(primaryStage, database);
-//
-//                um.showAndWait();
-Staff staff = table.getSelectionModel().getSelectedItem();
+                Staff staff = table.getSelectionModel().getSelectedItem();
                 UserUpdate diagUpdate = new UserUpdate(owner, dbase,staff, 1);
                 diagUpdate.showAndWait();
                 tableuser.clear();
-                dbase.listUser(glbCurUser, tableuser);            
-
+                dbase.listUser(glbCurUser, tableuser);     
             }
         });
 
         buttonModify.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-//                UserManager um = new UserManager(primaryStage, database);
-//                um.showAndWait();
-Staff staff = table.getSelectionModel().getSelectedItem();
-                  UserUpdate diagUpdate = new UserUpdate(owner, dbase, staff,2);
+                Staff staff = table.getSelectionModel().getSelectedItem();
+                if (staff == null)
+                {
+                    String strLog = "Please select one account.";
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText("Error");
+                    alert.setContentText(strLog);
+                    alert.showAndWait();
+                    return; 
+                }
+                UserUpdate diagUpdate = new UserUpdate(owner, dbase, staff, 2);
                 diagUpdate.showAndWait();
                 tableuser.clear();
                 dbase.listUser(glbCurUser, tableuser);
+                String strlog = String.format("Modify account: %s", staff.getStrName());
+                mainwindow.log(strlog);
             }
         });
 
         buttonDelete.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-//                UserManager um = new UserManager(primaryStage, database);
-//                um.showAndWait();
-
-        Staff staff = table.getSelectionModel().getSelectedItem();
-        if (staff.getStrName().equals("admin"))
-        {
-            String strLog = "admin can be deleted.";
+                Staff staff = table.getSelectionModel().getSelectedItem();
+                if (staff.getStrName().equals("admin")) {
+                    String strLog = "admin can be deleted.";
                     Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-
-        alert.setHeaderText("Error");
-        alert.setContentText(strLog);
-        alert.showAndWait();
-        return;
-        }
-        dbase.deleteUser(staff);
+                    alert.setTitle("Error");
+                    alert.setHeaderText("Error");
+                    alert.setContentText(strLog);
+                    alert.showAndWait();
+                    return;
+                }
+                dbase.deleteUser(staff);
                 tableuser.clear();
                 dbase.listUser(glbCurUser, tableuser);
-
-
-
+                String strlog = String.format("Delete account: %s", staff.getStrName());
+                mainwindow.log(strlog);
             }
         });
-        
-        
     }
     
 
-    
-    
+    public MainWindowController mainwindow;
+    public void setMainWindows(MainWindowController window)
+    {
+        mainwindow = window;
+    }
     public void setDB(DBAdmin db)
     {
         dbase = db;        

@@ -25,7 +25,7 @@ import javafx.beans.property.SimpleStringProperty;
  */
 public class Staff {
 
-    public static int num = 1;
+    public static int num = 0;
     private final SimpleIntegerProperty strNum;
     private final SimpleStringProperty strName;
     private final SimpleStringProperty strStaffID;

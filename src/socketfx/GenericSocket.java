@@ -6,12 +6,13 @@ import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 import mdsystem.MDSystem;
+import mdsystem.MainWindowController;
 
 public abstract class GenericSocket implements SocketListener {
     
     private final static Logger LOGGER =
             Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
-    public MDSystem mainInterface;
+    public MainWindowController mainInterface;
     public int port;
     protected Socket socketConnection = null;
     private BufferedWriter output = null;
@@ -33,10 +34,13 @@ public abstract class GenericSocket implements SocketListener {
     
     public void SetGui(MDSystem gui)
     {
+       // mainInterface = gui;
+    }
+        public void SetGui(MainWindowController gui)
+    {
         mainInterface = gui;
     }
-    
-    public MDSystem GetGui()
+    public MainWindowController GetGui()
     {
         if (mainInterface != null)
             return mainInterface;

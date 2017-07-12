@@ -1,8 +1,8 @@
 ----------------------------------------------------------------
-Fri Jul 07 22:13:54 AEST 2017:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.2 - (1629631): instance a816c00e-015d-1cf8-8168-00000278d578 
+Wed Jul 12 10:13:31 AEST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.2 - (1629631): instance a816c00e-015d-3424-c6a2-000003ced0d8 
 on database directory /home/freddie/NetBeansProjects/MDSystem/MDSystem/monitorDB with class loader sun.misc.Launcher$AppClassLoader@42a57993 
-Loaded from file:/home/freddie/NetBeansProjects/MDSystem/MDSystem/dist/run1447051366/lib/derby.jar
+Loaded from file:/home/freddie/NetBeansProjects/MDSystem/MDSystem/dist/run2110274765/lib/derby.jar
 java.vendor=Oracle Corporation
 java.runtime.version=1.8.0_121-b13
 user.dir=/home/freddie/NetBeansProjects/MDSystem/MDSystem
@@ -11,9 +11,3 @@ os.arch=amd64
 os.version=4.2.0-35-generic
 derby.system.home=null
 Database Class Loader started - derby.database.classpath=''
-----------------------------------------------------------------
-Fri Jul 07 22:13:59 AEST 2017: Shutting down Derby engine
-----------------------------------------------------------------
-Fri Jul 07 22:13:59 AEST 2017:
-Shutting down instance a816c00e-015d-1cf8-8168-00000278d578 on database directory /home/freddie/NetBeansProjects/MDSystem/MDSystem/monitorDB with class loader sun.misc.Launcher$AppClassLoader@42a57993 
-----------------------------------------------------------------
